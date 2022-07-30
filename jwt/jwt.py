@@ -1,9 +1,10 @@
 from base64 import urlsafe_b64encode
+from datetime import datetime
 
-from models.algorithms.BaseAlgorithm import AlgorithmParentClass
-from models.validators import sign
+from jwt.algorithms.BaseAlgorithm import AlgorithmParentClass
+from jwt.models import SignModels
+from utils import base64_utils
 from settings import TOKEN_TYP
-from utils import base_dict
 
 
 class JWT(object):
@@ -26,10 +27,22 @@ class JWT(object):
     def _clear(self):
         if self.header is None:
             raise ValueError('Cant perform header from base64, header is None')
-        self._clear_header = base_dict.dict_from_base(self.header)
+        self._clear_header = base64_utils.dict_from_base64_urlsafe(self.header)
         if self.payload is None:
             raise ValueError('Cant perform payload from base64, payload is None')
-        self._clear_payload = base_dict.dict_from_base(self.payload)
+        self._clear_payload = base64_utils.dict_from_base64_urlsafe(self.payload)
+
+    def verify(self, key: bytes) -> bool:
+        if not self.verify_sign(key):
+            return False
+        now_timestamp = datetime.now().timestamp()
+        if self.clear_payload.get('nbf') is not None and (self.clear_payload.get('nbf') or 0) > now_timestamp:
+            return False
+        if self.clear_payload.get('exp') is None:
+            return False
+        if self.clear_payload.get('exp') < now_timestamp:
+            return False
+        return True
 
     def verify_sign(self, key: bytes) -> bool:
         if self.clear_header.get('typ') != TOKEN_TYP:
@@ -82,13 +95,13 @@ class JWT(object):
         elif not kwargs:
             raise ValueError('Need args or kwargs for creation jwt')
         else:
-            data = sign.SignRequestModel(**kwargs)
+            data = SignModels.SignRequestModel(**kwargs)
         return cls._create(data, key)
 
     @classmethod
-    def _create(cls, data: sign.SignRequestModel, key: bytes):
+    def _create(cls, data: SignModels.SignRequestModel, key: bytes):
         jwt_obj = cls(b'', data, _not_init_token=True)
-        jwt_obj._header = base_dict.dict_to_base(
+        jwt_obj._header = base64_utils.dict_to_base64_urlsafe(
             {
                 'typ': TOKEN_TYP,
                 'alg': data.alg.name
@@ -102,10 +115,3 @@ class JWT(object):
 
     def __str__(self):
         return self.token.decode()
-
-
-# sign_model = sign.SignRequestModel(alg='hmac_sha256', sub='auth', aud='some site', body={"some": 234}, tlt=600)
-# jwt_token = JWT.create(alg='hmac_sha256', sub='auth', aud='some site', body={"some": 234}, tlt=600, key=b'somebody')
-# jwt2_obj = JWT(jwt_token.token)
-# print(jwt2_obj.verify_sign(b'somebody'))
-# print(jwt2_obj.clear_payload)

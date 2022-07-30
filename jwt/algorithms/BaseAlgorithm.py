@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 
 
 # Base class for all cryptography algorithms
@@ -7,17 +8,19 @@ class BaseAlgorithm(object):
     func = None
     algorithms_enum_join_on_supported = {}
     algorithms_enum = None
+    supported_algorithms: List[str]
 
     # Create Enum and asocial array for enum value == some algorithm
     def __new__(cls, *args, **kwargs):
         enum_alg_dict = {}
         cls.algorithms_enum_join_on_supported = {}
         for i in cls.__subclasses__():
-            enum_alg_dict[i.__name__] = i.name
-            cls.algorithms_enum_join_on_supported[i.__name__] = i
+            enum_alg_dict[i.__name__.lower()] = i.name
+            cls.algorithms_enum_join_on_supported[i.__name__.lower()] = i
         if not enum_alg_dict:
             raise ValueError('No items for enum')
         cls.algorithms_enum = Enum('hash_algorithms_enum', enum_alg_dict)
+        cls.supported_algorithms = [e.value for e in AlgorithmParentClass.algorithms_enum]
         return cls
 
     # Join enum name: str with algorithm class

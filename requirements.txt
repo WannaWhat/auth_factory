@@ -1,3 +1,6 @@
 pydantic==1.9.1
 python-dotenv==0.20.0
 typing-extensions==4.3.0
+uvicorn==0.18.2
+fastapi==0.79.0
+
