@@ -1,6 +1,4 @@
 from fastapi import FastAPI
-
-from web.models import MaxAllowedVersion, SupportedAlgorithms, VerifyToken
 from web import api
 
 app = FastAPI()

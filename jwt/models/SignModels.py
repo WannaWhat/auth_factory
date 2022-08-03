@@ -7,9 +7,9 @@ from pydantic import BaseModel, Field, validator
 
 from jwt.algorithms.BaseAlgorithm import AlgorithmParentClass
 # That import must be called before AlgorithmParentClass
-from jwt.algorithms import hash as _
+from jwt.algorithms import hash as hash_algorithms_classes
 # Initial __new__ class. At this point enum is created
-AlgorithmParentClass()
+hash_algorithms_classes.AlgorithmParentClass()
 
 
 # Token validation class
