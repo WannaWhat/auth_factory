@@ -1,6 +1,8 @@
 [flake8]
 max-line-length=120
+ignore=D100, D1
 exclude=
     venv,
     configs,
-    tests
+    tests,
+    test_client.py

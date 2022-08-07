@@ -3,8 +3,8 @@ from datetime import datetime
 
 from jwt.algorithms.BaseAlgorithm import AlgorithmParentClass
 from jwt.models import SignModels
-from utils import base64_utils
 from settings import TOKEN_TYP
+from utils import base64_utils
 
 
 class JWT(object):

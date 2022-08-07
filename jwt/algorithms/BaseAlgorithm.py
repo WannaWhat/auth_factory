@@ -38,9 +38,9 @@ class BaseAlgorithm(object):
 
 
 class AlgorithmTypesEnum(str, Enum):
-    HASH_SUM = 'hash_sum'
-    ASYMMETRIC = 'asymmetric'
-    SYMMETRIC = 'symmetric'
+    hash_sum = 'hash_sum'
+    asymmetric = 'asymmetric'
+    symmetric = 'symmetric'
 
 
 # AlgorithmParentClass for isolation memory from base class

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+
 from web import api
 
 app = FastAPI()

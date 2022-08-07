@@ -49,8 +49,8 @@ class SignRequestModel(BaseModel):
                 raise ValueError('exp claim must be greater than iat claim')
         return v
 
-    # Validate that token life time or token expire time exists
-    # If token life time is None make token life time from expire time
+    # Validate that token lifetime or token expire time exists
+    # If token lifetime is None make token lifetime from expire time
     @validator('tlt', always=True)
     def time_identification_validator(cls, v, values, **kwargs):
         if v is not None and values.get('exp') is not None:
@@ -62,14 +62,16 @@ class SignRequestModel(BaseModel):
             return v
         elif values.get('exp') is None:
             raise ValueError('tlt or exp claims must be not None')
-        else:
-            return int(values['exp'] - values['iat'])
+        return int(values['exp'] - values['iat'])
 
 
-# try:
-#     jwt_request = SignRequestModel(alg='s256', sub='auth', aud='some site', body={"some": 234}, tlt=600)
-#     print(jwt_request.alg.func(b'1', b'dsf'))
-# except ValidationError as e:
-#     print(e.errors())
-# except Exception as e:
-#     print(e)
+class SignResponseModel(BaseModel):
+    code: int
+    token: str
+
+    # Token format validator
+    @validator('token')
+    def token_validator(cls, v: str, values, **kwargs) -> str:
+        if len(v.split('.')) != 3:
+            raise ValueError('Token not in token format')
+        return v
